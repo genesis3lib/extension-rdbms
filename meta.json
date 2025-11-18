@@ -18,6 +18,7 @@
       "mysql",
       "spring"
     ],
+    "providers": ["aws"],
     "compatibleWith": [
       "spring"
     ],

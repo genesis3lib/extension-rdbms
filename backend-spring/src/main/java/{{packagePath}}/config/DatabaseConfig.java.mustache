@@ -3,10 +3,9 @@ package {{{javaPackageFull}}}.config;
 import liquibase.integration.spring.SpringLiquibase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -23,8 +22,6 @@ import java.sql.Statement;
  */
 @Slf4j
 @Configuration
-@EnableJpaRepositories(basePackages = "{{{javaPackageFull}}}.jpa.repository")
-@ConfigurationProperties(prefix = "spring.datasource")
 public class DatabaseConfig {
 
     @Value("${spring.datasource.url}")
@@ -39,19 +36,37 @@ public class DatabaseConfig {
     @Value("${spring.liquibase.default-schema}")
     private String schema;
 
+    @Value("${spring.liquibase.change-log}")
+    private String changeLog;
+
     public DatabaseConfig() {
         log.info("Initializing {{{databaseType}}} database configuration");
         log.info("Connection pool size: {{{connectionPoolSize}}}");
         log.info("DDL auto mode: {{{ddlAuto}}}");
     }
 
+    /**
+     * Creates the database schema. This bean is created before Liquibase runs.
+     */
     @Bean
-    public SpringLiquibase liquibase(DataSource dataSource) {
+    public Object schemaInitializer() {
         createSchema();
+        return new Object(); // Marker bean
+    }
+
+    /**
+     * Custom SpringLiquibase bean that depends on schema creation.
+     * This ensures the schema exists before Liquibase tries to create tables.
+     */
+    @Bean
+    @DependsOn("schemaInitializer")
+    public SpringLiquibase liquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setDataSource(dataSource);
+        liquibase.setChangeLog(changeLog);
         liquibase.setDefaultSchema(schema);
-        liquibase.setChangeLog("classpath:db/changelog/db.changelog-master.yaml");
+        liquibase.setShouldRun(true);
+        log.info("Configured Liquibase with schema: {} and changelog: {}", schema, changeLog);
         return liquibase;
     }
 

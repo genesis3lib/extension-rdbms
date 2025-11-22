@@ -2,6 +2,7 @@
 spring:
   liquibase:
     default-schema: {{boundBackendModule.moduleId}}
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
   datasource:
     {{#isPostgreSQL}}
     url: ${DATABASE_URL:jdbc:postgresql://${SPRING_ENV_DB_HOST:localhost}:${SPRING_ENV_DB_PORT:5432}/${SPRING_ENV_DB_NAME:db-{{{projectName}}}}}
@@ -48,4 +49,8 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: ERROR
+    org.hibernate.tool.schema: ERROR
+    liquibase: ERROR
+    org.springframework.jdbc: ERROR
+    com.zaxxer.hikari: ERROR

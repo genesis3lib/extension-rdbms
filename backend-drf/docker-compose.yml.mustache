@@ -1,0 +1,71 @@
+# Docker Compose for local {{databaseType}} development
+# Usage: docker compose up -d
+
+services:
+{{#isPostgresql}}
+  postgres:
+    image: postgres:16
+    container_name: {{{projectName}}}-postgres
+    environment:
+      POSTGRES_DB: {{{projectName}}}
+      POSTGRES_USER: {{{projectName}}}
+      POSTGRES_PASSWORD: {{{projectName}}}-dev-password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{{projectName}}}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+{{/isPostgresql}}
+{{#isMysql}}
+  mysql:
+    image: mysql:8
+    container_name: {{{projectName}}}-mysql
+    environment:
+      MYSQL_DATABASE: {{{projectName}}}
+      MYSQL_USER: {{{projectName}}}
+      MYSQL_PASSWORD: {{{projectName}}}-dev-password
+      MYSQL_ROOT_PASSWORD: root-dev-password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+{{/isMysql}}
+{{#isMariadb}}
+  mariadb:
+    image: mariadb:11
+    container_name: {{{projectName}}}-mariadb
+    environment:
+      MYSQL_DATABASE: {{{projectName}}}
+      MYSQL_USER: {{{projectName}}}
+      MYSQL_PASSWORD: {{{projectName}}}-dev-password
+      MYSQL_ROOT_PASSWORD: root-dev-password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+{{/isMariadb}}
+
+volumes:
+{{#isPostgresql}}
+  postgres_data:
+{{/isPostgresql}}
+{{#isMysql}}
+  mysql_data:
+{{/isMysql}}
+{{#isMariadb}}
+  mariadb_data:
+{{/isMariadb}}

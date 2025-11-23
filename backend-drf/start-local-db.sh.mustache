@@ -1,0 +1,43 @@
+#!/bin/bash
+# Start local {{databaseType}} database for development
+# Usage: ./start-local-db.sh
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+echo "Starting local {{databaseType}} database..."
+
+# Start database using docker compose
+docker compose up -d
+
+# Wait for database to be ready
+echo "Waiting for database to be ready..."
+{{#isPostgresql}}
+until docker compose exec -T postgres pg_isready -U {{{projectName}}} 2>/dev/null; do
+  sleep 1
+done
+echo "PostgreSQL is ready!"
+echo ""
+echo "Connection URL:"
+echo "  DATABASE_URL=postgresql://{{{projectName}}}:{{{projectName}}}-dev-password@localhost:5432/{{{projectName}}}"
+{{/isPostgresql}}
+{{#isMysql}}
+until docker compose exec -T mysql mysqladmin ping -h localhost --silent 2>/dev/null; do
+  sleep 1
+done
+echo "MySQL is ready!"
+echo ""
+echo "Connection URL:"
+echo "  DATABASE_URL=mysql://{{{projectName}}}:{{{projectName}}}-dev-password@localhost:3306/{{{projectName}}}"
+{{/isMysql}}
+{{#isMariadb}}
+until docker compose exec -T mariadb mariadb-admin ping -h localhost --silent 2>/dev/null; do
+  sleep 1
+done
+echo "MariaDB is ready!"
+echo ""
+echo "Connection URL:"
+echo "  DATABASE_URL=mysql://{{{projectName}}}:{{{projectName}}}-dev-password@localhost:3306/{{{projectName}}}"
+{{/isMariadb}}

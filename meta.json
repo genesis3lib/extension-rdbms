@@ -2,25 +2,28 @@
   "version": "3.0.0",
   "metadata": {
     "id": "extension-database",
-    "name": "Database Support (JPA)",
+    "name": "Database Support",
     "kind": "extension",
     "type": "database",
     "layers": [
       "backend"
     ],
-    "description": "Adds JPA/database support with entity management, repositories, and connection pooling",
+    "description": "Adds database support for Spring (JPA) and Django (dj-database-url)",
     "version": "1.0.0",
     "author": "Genesis Team",
     "tags": [
       "database",
       "jpa",
+      "django",
       "postgresql",
-      "mysql",
-      "spring"
+      "mysql"
     ],
-    "providers": ["aws"],
+    "providers": [
+      "aws"
+    ],
     "compatibleWith": [
-      "spring"
+      "spring",
+      "drf"
     ],
     "springProfiles": [
       "database"
@@ -53,8 +56,9 @@
       ],
       "default": "3.2.0",
       "required": true,
-      "description": "JPA specification version",
-      "category": "database"
+      "description": "JPA specification version (Spring only)",
+      "category": "database",
+      "forProvider": ["spring"]
     },
     {
       "key": "connectionPoolSize",
@@ -77,8 +81,9 @@
       ],
       "default": "validate",
       "required": true,
-      "description": "Hibernate DDL auto mode",
-      "category": "database"
+      "description": "Hibernate DDL auto mode (Spring only)",
+      "category": "database",
+      "forProvider": ["spring"]
     }
   ],
   "dependencies": {
@@ -96,6 +101,10 @@
       "<dependency><groupId>org.liquibase</groupId><artifactId>liquibase-core</artifactId></dependency>",
       "<dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><optional>true</optional></dependency>",
       "<dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><scope>test</scope></dependency>"
+    ],
+    "pip": [
+      "dj-database-url==2.3.0",
+      "psycopg2-binary==2.9.9"
     ]
   },
   "generation": {
@@ -120,6 +129,17 @@
               "h2": [
                 "runtimeOnly 'com.h2database:h2'"
               ]
+            },
+            "pip": {
+              "postgresql": [
+                "psycopg2-binary==2.9.9"
+              ],
+              "mysql": [
+                "mysqlclient==2.2.4"
+              ],
+              "mariadb": [
+                "mysqlclient==2.2.4"
+2              ]
             }
           }
         }

@@ -1,0 +1,37 @@
+"""
+Development settings for {{{projectName}}} project.
+Database extension enabled - uses dj-database-url.
+"""
+
+from .base import *
+import os
+import dj_database_url
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-dev-{{{projectName}}}-change-in-production'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '{{{projectName}}}-api-dev.{{{domain}}}']
+
+# Database - Uses DATABASE_URL environment variable via dj-database-url
+# Default to SQLite if DATABASE_URL is not set
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age={{connectionPoolSize}},
+        conn_health_checks=True,
+    )
+}
+
+# CORS settings - Allow frontend origins
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://{{{projectName}}}-dev.{{{domain}}}',
+]
+
+CORS_ALLOW_CREDENTIALS = True

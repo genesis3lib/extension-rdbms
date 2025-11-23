@@ -1,0 +1,52 @@
+"""
+Production settings for {{{projectName}}} project.
+Database extension enabled - uses dj-database-url.
+"""
+
+from .base import *
+import os
+import secrets
+import dj_database_url
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# Generate a secure random key - in production, use environment variable or secrets manager
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', secrets.token_urlsafe(50))
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+# Production hosts
+ALLOWED_HOSTS = [
+    '{{{projectName}}}-api.{{{domain}}}',
+    '{{{projectName}}}-api-prod.{{{domain}}}',
+]
+
+# Database - Uses DATABASE_URL environment variable via dj-database-url
+# MUST be configured via environment variable for production
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable must be set for production")
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age={{connectionPoolSize}},
+        conn_health_checks=True,
+    )
+}
+
+# CORS settings - Production frontend origins
+CORS_ALLOWED_ORIGINS = [
+    'https://{{{projectName}}}.{{{domain}}}',
+    'https://{{{projectName}}}-prod.{{{domain}}}',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# Security settings
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'

@@ -2,7 +2,7 @@
 # Usage: docker compose up -d
 
 services:
-{{#isPostgresql}}
+{{#isPostgreSQL}}
   postgres:
     image: postgres:16
     container_name: {{{projectName}}}-postgres
@@ -19,8 +19,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-{{/isPostgresql}}
-{{#isMysql}}
+{{/isPostgreSQL}}
+{{#isMySQL}}
   mysql:
     image: mysql:8
     container_name: {{{projectName}}}-mysql
@@ -38,8 +38,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-{{/isMysql}}
-{{#isMariadb}}
+{{/isMySQL}}
+{{#isMariaDB}}
   mariadb:
     image: mariadb:11
     container_name: {{{projectName}}}-mariadb
@@ -57,15 +57,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-{{/isMariadb}}
+{{/isMariaDB}}
 
 volumes:
-{{#isPostgresql}}
+{{#isPostgreSQL}}
   postgres_data:
-{{/isPostgresql}}
-{{#isMysql}}
+{{/isPostgreSQL}}
+{{#isMySQL}}
   mysql_data:
-{{/isMysql}}
-{{#isMariadb}}
+{{/isMySQL}}
+{{#isMariaDB}}
   mariadb_data:
-{{/isMariadb}}
+{{/isMariaDB}}

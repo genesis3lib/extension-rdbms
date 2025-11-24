@@ -15,11 +15,19 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', secrets.token_urlsafe(50))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# Production hosts
+# Production hosts - includes localhost for health checks from ALB
+# Additional hosts can be added via DJANGO_ALLOWED_HOSTS environment variable (comma-separated)
 ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
     '{{{projectName}}}-api.{{{domain}}}',
     '{{{projectName}}}-api-prod.{{{domain}}}',
 ]
+
+# Allow additional hosts from environment variable
+extra_hosts = os.getenv('DJANGO_ALLOWED_HOSTS', '')
+if extra_hosts:
+    ALLOWED_HOSTS.extend([h.strip() for h in extra_hosts.split(',') if h.strip()])
 
 # Database - Uses DATABASE_URL environment variable via dj-database-url
 # MUST be configured via environment variable for production
@@ -43,8 +51,14 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Security settings
-SECURE_SSL_REDIRECT = True
+# Security settings for running behind ALB/proxy
+# SECURE_PROXY_SSL_HEADER tells Django to trust the X-Forwarded-Proto header from ALB
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Disable SECURE_SSL_REDIRECT when behind ALB - ALB handles HTTPS termination
+# ALB forwards requests as HTTP internally, so Django shouldn't redirect again
+SECURE_SSL_REDIRECT = False
+
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True

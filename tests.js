@@ -3,8 +3,8 @@
  */
 
 module.exports = {
-  moduleId: 'extension-database',
-  moduleName: 'Database Configuration',
+  moduleId: 'extension-rdbms',
+  moduleName: 'RDBMS Database Configuration',
 
   scenarios: [
     {

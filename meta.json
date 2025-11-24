@@ -1,10 +1,10 @@
 {
   "version": "3.0.0",
   "metadata": {
-    "id": "extension-database",
-    "name": "Database Support",
+    "id": "extension-rdbms",
+    "name": "RDBMS Database Support",
     "kind": "extension",
-    "type": "database",
+    "type": "rdbms",
     "layers": [
       "backend"
     ],

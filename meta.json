@@ -12,9 +12,8 @@
     "version": "1.0.0",
     "author": "Genesis Team",
     "tags": [
+      "rdbms",
       "database",
-      "jpa",
-      "django",
       "postgresql",
       "mysql"
     ],
@@ -58,7 +57,9 @@
       "required": true,
       "description": "JPA specification version (Spring only)",
       "category": "database",
-      "forProvider": ["spring"]
+      "forProvider": [
+        "spring"
+      ]
     },
     {
       "key": "connectionPoolSize",
@@ -83,7 +84,9 @@
       "required": true,
       "description": "Hibernate DDL auto mode (Spring only)",
       "category": "database",
-      "forProvider": ["spring"]
+      "forProvider": [
+        "spring"
+      ]
     }
   ],
   "dependencies": {

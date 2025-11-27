@@ -29,11 +29,11 @@ extra_hosts = os.getenv('DJANGO_ALLOWED_HOSTS', '')
 if extra_hosts:
     ALLOWED_HOSTS.extend([h.strip() for h in extra_hosts.split(',') if h.strip()])
 
-# Database - Uses DATABASE_URL environment variable via dj-database-url
+# Database - Uses PYTHON_DRF_DATABASE_URL environment variable via dj-database-url
 # MUST be configured via environment variable for production
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('PYTHON_DRF_DATABASE_URL')
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable must be set for production")
+    raise ValueError("PYTHON_DRF_DATABASE_URL environment variable must be set for production")
 
 DATABASES = {
     'default': dj_database_url.parse(

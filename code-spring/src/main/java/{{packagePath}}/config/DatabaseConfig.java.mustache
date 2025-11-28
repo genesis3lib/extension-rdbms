@@ -1,5 +1,6 @@
 package {{{javaPackageFull}}}.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,6 +56,23 @@ public class DatabaseConfig {
     public Object schemaInitializer() {
         createSchema();
         return new Object(); // Marker bean
+    }
+
+    /**
+     * Custom DataSource that sets the search_path to the configured schema.
+     * This ensures Hibernate/JPA queries use the correct schema.
+     */
+    @Bean
+    @Primary
+    @DependsOn("schemaInitializer")
+    public DataSource dataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(jdbcUrl);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        dataSource.setConnectionInitSql("SET search_path TO " + schema + ", public");
+        log.info("Configured DataSource with search_path: {}, public", schema);
+        return dataSource;
     }
 
     /**

@@ -155,14 +155,5 @@
         "mode": "+x"
       }
     ]
-  },
-  "gitignore": [
-    "# Database",
-    "*.db",
-    "*.sqlite",
-    "",
-    "# Docker volumes",
-    ".docker/",
-    ""
-  ]
+  }
 }

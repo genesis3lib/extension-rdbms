@@ -1,0 +1,29 @@
+"""
+Database configuration for {{{projectName}}} project.
+Added by extension-rdbms - environment-agnostic database config.
+
+Import this in your settings file:
+    from .database import DATABASES, DB_SCHEMA
+"""
+
+import os
+import dj_database_url
+
+# Database - Uses PYTHON_DRF_DATABASE_URL environment variable via dj-database-url
+# Falls back to SQLite for local development if not set
+DATABASE_URL = os.environ.get('PYTHON_DRF_DATABASE_URL', 'sqlite:///db.sqlite3')
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age={{connectionPoolSize}},
+        conn_health_checks=True,
+    )
+}
+
+# Set PostgreSQL search_path to use schema if specified
+# Schema name defaults to backend module ID (matching Spring Boot pattern)
+DB_SCHEMA = os.environ.get('PYTHON_DRF_DATABASE_SCHEMA', '{{{boundBackendModule.moduleId}}}')
+if DB_SCHEMA and DATABASES['default'].get('ENGINE') == 'django.db.backends.postgresql':
+    DATABASES['default'].setdefault('OPTIONS', {})
+    DATABASES['default']['OPTIONS']['options'] = f'-c search_path={DB_SCHEMA},public'

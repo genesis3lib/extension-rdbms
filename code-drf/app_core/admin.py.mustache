@@ -1,0 +1,10 @@
+from django.contrib import admin
+from .models import AppConfig
+
+
+@admin.register(AppConfig)
+class AppConfigAdmin(admin.ModelAdmin):
+    list_display = ['config_key', 'tenant_id', 'value', 'modified_time']
+    list_filter = ['tenant_id']
+    search_fields = ['config_key', 'description', 'value']
+    ordering = ['config_key']

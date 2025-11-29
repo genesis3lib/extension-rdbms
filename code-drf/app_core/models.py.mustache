@@ -1,0 +1,99 @@
+"""
+Base model classes for {{{projectName}}}
+
+Provides common fields for all models:
+- id: Primary key (UUID)
+- deleted: Soft delete flag
+- delete_reason: Reason for deletion
+- tenant_id: Multi-tenant support
+- created_time: Creation timestamp (epoch millis)
+- modified_time: Last modification timestamp (epoch millis)
+- created_by: User who created the record
+- modified_by: User who last modified the record
+- slug: URL-friendly identifier
+"""
+
+from django.db import models
+from django.utils import timezone
+import uuid
+
+
+class BaseModelManager(models.Manager):
+    """Manager that excludes soft-deleted records by default."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted=False)
+
+    def all_with_deleted(self):
+        """Return all records including soft-deleted ones."""
+        return super().get_queryset()
+
+    def deleted_only(self):
+        """Return only soft-deleted records."""
+        return super().get_queryset().filter(deleted=True)
+
+
+class BaseModel(models.Model):
+    """
+    Abstract base model with common fields for all entities.
+    Matches Spring Boot's BaseEntity pattern.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    deleted = models.BooleanField(default=False, db_index=True)
+    delete_reason = models.CharField(max_length=500, blank=True, null=True)
+    tenant_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    created_time = models.BigIntegerField(blank=True, null=True)
+    modified_time = models.BigIntegerField(blank=True, null=True)
+    created_by = models.CharField(max_length=255, blank=True, null=True)
+    modified_by = models.CharField(max_length=255, blank=True, null=True)
+    slug = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+    objects = BaseModelManager()
+    all_objects = models.Manager()  # Includes deleted records
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        now = int(timezone.now().timestamp() * 1000)  # Epoch millis
+        if self.created_time is None:
+            self.created_time = now
+        self.modified_time = now
+        super().save(*args, **kwargs)
+
+    def soft_delete(self, reason=None):
+        """Soft delete the record."""
+        self.deleted = True
+        self.delete_reason = reason
+        self.save(update_fields=['deleted', 'delete_reason', 'modified_time'])
+
+    def restore(self):
+        """Restore a soft-deleted record."""
+        self.deleted = False
+        self.delete_reason = None
+        self.save(update_fields=['deleted', 'delete_reason', 'modified_time'])
+
+
+class AppConfig(BaseModel):
+    """
+    AppConfig model for {{{projectName}}}
+
+    Stores runtime application configuration that can be modified by admins on the fly.
+    Each config is identified by a unique (tenant_id, config_key) combination.
+    """
+
+    config_key = models.CharField(max_length=255, db_index=True)
+    description = models.CharField(max_length=1000, blank=True, null=True)
+    value = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'app_config'
+        unique_together = [['tenant_id', 'config_key']]
+        indexes = [
+            models.Index(fields=['config_key'], name='idx_app_config_key'),
+            models.Index(fields=['tenant_id'], name='idx_app_config_tenant'),
+        ]
+
+    def __str__(self):
+        return f"{self.config_key}={self.value}"

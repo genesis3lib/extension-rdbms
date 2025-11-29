@@ -1,0 +1,49 @@
+"""
+Initial migration for app_core - creates AppConfig table.
+"""
+
+from django.db import migrations, models
+import uuid
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='AppConfig',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('deleted', models.BooleanField(db_index=True, default=False)),
+                ('delete_reason', models.CharField(blank=True, max_length=500, null=True)),
+                ('tenant_id', models.CharField(blank=True, db_index=True, max_length=100, null=True)),
+                ('created_time', models.BigIntegerField(blank=True, null=True)),
+                ('modified_time', models.BigIntegerField(blank=True, null=True)),
+                ('created_by', models.CharField(blank=True, max_length=255, null=True)),
+                ('modified_by', models.CharField(blank=True, max_length=255, null=True)),
+                ('slug', models.CharField(blank=True, db_index=True, max_length=255, null=True)),
+                ('config_key', models.CharField(db_index=True, max_length=255)),
+                ('description', models.CharField(blank=True, max_length=1000, null=True)),
+                ('value', models.TextField(blank=True, null=True)),
+            ],
+            options={
+                'db_table': 'app_config',
+            },
+        ),
+        migrations.AddIndex(
+            model_name='appconfig',
+            index=models.Index(fields=['config_key'], name='idx_app_config_key'),
+        ),
+        migrations.AddIndex(
+            model_name='appconfig',
+            index=models.Index(fields=['tenant_id'], name='idx_app_config_tenant'),
+        ),
+        migrations.AddConstraint(
+            model_name='appconfig',
+            constraint=models.UniqueConstraint(fields=('tenant_id', 'config_key'), name='uk_app_config_tenant_key'),
+        ),
+    ]

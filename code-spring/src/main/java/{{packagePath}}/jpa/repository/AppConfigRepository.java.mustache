@@ -18,10 +18,10 @@ public interface AppConfigRepository extends BaseRepository<AppConfig> {
      * Find config by tenant and key
      *
      * @param tenantId the tenant identifier
-     * @param key the config key
+     * @param configKey the config key
      * @return Optional containing the config if found
      */
-    Optional<AppConfig> findByTenantIdAndKey(String tenantId, String key);
+    Optional<AppConfig> findByTenantIdAndConfigKey(String tenantId, String configKey);
 
     /**
      * Find all configs for a tenant
@@ -34,17 +34,17 @@ public interface AppConfigRepository extends BaseRepository<AppConfig> {
     /**
      * Find config by key (for single-tenant apps)
      *
-     * @param key the config key
+     * @param configKey the config key
      * @return Optional containing the config if found
      */
-    Optional<AppConfig> findByKey(String key);
+    Optional<AppConfig> findByConfigKey(String configKey);
 
     /**
      * Check if config exists for tenant and key
      *
      * @param tenantId the tenant identifier
-     * @param key the config key
+     * @param configKey the config key
      * @return true if config exists
      */
-    boolean existsByTenantIdAndKey(String tenantId, String key);
+    boolean existsByTenantIdAndConfigKey(String tenantId, String configKey);
 }

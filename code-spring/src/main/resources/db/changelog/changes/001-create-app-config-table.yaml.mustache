@@ -47,7 +47,7 @@ databaseChangeLog:
                   name: slug
                   type: TEXT
               - column:
-                  name: key
+                  name: config_key
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
@@ -60,7 +60,7 @@ databaseChangeLog:
 
         - addUniqueConstraint:
             tableName: app_config
-            columnNames: tenant_id, key
+            columnNames: tenant_id, config_key
             constraintName: uk_app_config_tenant_key
 
         - createIndex:
@@ -68,7 +68,7 @@ databaseChangeLog:
             indexName: idx_app_config_key
             columns:
               - column:
-                  name: key
+                  name: config_key
 
         - createIndex:
             tableName: app_config

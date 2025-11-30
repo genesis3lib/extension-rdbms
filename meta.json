@@ -27,7 +27,12 @@
     "springProfiles": [
       "database"
     ],
-    "allowMultiple": true
+    "allowMultiple": true,
+    "providesFragments": {
+      "django-settings": {
+        "mode": "append"
+      }
+    }
   },
   "scaffoldConfigTemplate": [
     {

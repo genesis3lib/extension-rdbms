@@ -39,12 +39,13 @@
       "key": "databaseType",
       "label": "Database Type",
       "type": "select",
-      "options": [
-        "postgresql",
-        "mysql",
-        "mariadb",
-        "h2"
-      ],
+      "options": ["postgresql", "mysql", "mariadb", "h2"],
+      "optionNotes": {
+        "postgresql": { "notes": "Robust, feature-rich - recommended" },
+        "mysql": { "notes": "Popular, good performance" },
+        "mariadb": { "notes": "MySQL fork, fully compatible" },
+        "h2": { "notes": "In-memory, for dev/testing only" }
+      },
       "default": "postgresql",
       "required": true,
       "description": "Database management system",
@@ -54,17 +55,16 @@
       "key": "jpaVersion",
       "label": "JPA Version",
       "type": "select",
-      "options": [
-        "3.1.0",
-        "3.2.0"
-      ],
+      "options": ["3.1.0", "3.2.0"],
+      "optionNotes": {
+        "3.1.0": { "notes": "Stable" },
+        "3.2.0": { "notes": "Latest - recommended" }
+      },
       "default": "3.2.0",
       "required": true,
       "description": "JPA specification version (Spring only)",
       "category": "database",
-      "forProvider": [
-        "spring"
-      ]
+      "forProvider": ["spring"]
     },
     {
       "key": "connectionPoolSize",
@@ -79,19 +79,18 @@
       "key": "ddlAuto",
       "label": "DDL Auto Mode",
       "type": "select",
-      "options": [
-        "none",
-        "validate",
-        "update",
-        "create-drop"
-      ],
+      "options": ["none", "validate", "update", "create-drop"],
+      "optionNotes": {
+        "none": { "notes": "No DDL changes - production safe" },
+        "validate": { "notes": "Validates schema - recommended for prod" },
+        "update": { "notes": "Auto-update schema - dev only" },
+        "create-drop": { "notes": "Recreate on restart - testing only" }
+      },
       "default": "validate",
       "required": true,
       "description": "Hibernate DDL auto mode (Spring only)",
       "category": "database",
-      "forProvider": [
-        "spring"
-      ]
+      "forProvider": ["spring"]
     }
   ],
   "dependencies": {

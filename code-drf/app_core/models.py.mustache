@@ -89,10 +89,12 @@ class AppConfig(BaseModel):
 
     class Meta:
         db_table = 'app_config'
-        unique_together = [['tenant_id', 'config_key']]
         indexes = [
             models.Index(fields=['config_key'], name='idx_app_config_key'),
             models.Index(fields=['tenant_id'], name='idx_app_config_tenant'),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=['tenant_id', 'config_key'], name='uk_app_config_tenant_key'),
         ]
 
     def __str__(self):
